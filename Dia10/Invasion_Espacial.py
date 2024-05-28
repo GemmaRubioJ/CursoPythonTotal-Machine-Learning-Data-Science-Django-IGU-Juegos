@@ -2,6 +2,18 @@ import pygame
 import random
 import math
 from pygame import mixer
+import io
+
+
+
+#Convertir strings en bytes para exportar las fuentes
+def cargar_fuente_bytes(fuente, fuente_final):
+    with open(fuente, 'rb') as f:
+        ttf_bytes1 = f.read()
+    with open(fuente_final, 'rb') as f2:
+        ttf_bytes2 = f2.read()
+    return io.BytesIO(ttf_bytes1), io.BytesIO(ttf_bytes2)
+
 
 # Inicializar Pygame
 pygame.init()
@@ -46,6 +58,7 @@ for n in range(cantidad_enemigos):
     enemigo_y_cambio.append(50)
 
 #Variables de la Bala
+balas= []
 img_bala = pygame.image.load("bala.png")
 bala_x = 0
 bala_y = 500
@@ -56,12 +69,16 @@ bala_visible = False
 
 #Puntuación
 puntuacion = 0
-fuente = pygame.font.Font('f2-tecnocratica-ffp.ttf', 30)
+fuente_bytes, fuente_final_bytes = cargar_fuente_bytes('f2-tecnocratica-ffp.ttf', 'Fastest.ttf')
+fuente = pygame.font.Font(fuente_bytes, 30)
+fuente_final = pygame.font.Font(fuente_final_bytes, 40)
 texto_x = 10
 texto_y = 10
 
 #Texto final de juego
-fuente_final = pygame.font.Font('Fastest.ttf', 40)
+#fuente_final = pygame.font.Font('Fastest.ttf', 40)
+
+
 
 #Mostrar Puntuacion
 def mostrar_puntuacion(x, y):
@@ -115,8 +132,15 @@ while se_ejecuta:
             if event.key == pygame.K_RIGHT:
                 jugador_x_cambio = 0.2
             if event.key == pygame.K_SPACE:
-                sonido_bala = mixer.Sound('disparo.mp3')
-                sonido_bala.play()
+                if len(balas) == 0 or balas[-1]['y'] < jugador_y - 50:  # Esto evita disparar muchas balas demasiado rápido
+                    sonido_bala = mixer.Sound('disparo.mp3')
+                    sonido_bala.play()
+                    nueva_bala = {
+                        "x": jugador_x,
+                        "y": jugador_y,
+                        "velocidad": -3
+                    }
+                    balas.append(nueva_bala)
                 if not bala_visible:
                     bala_x = jugador_x
                     disparar_bala(bala_x, bala_y)
@@ -138,7 +162,7 @@ while se_ejecuta:
     for e in range(cantidad_enemigos):
 
         #fin del juego
-        if enemigo_y[e] > 400:
+        if enemigo_y[e] > 500:
             for k in range(cantidad_enemigos):
                 enemigo_y[k] = 1000
             texto_final()
@@ -153,16 +177,16 @@ while se_ejecuta:
             enemigo_x_cambio[e] = -0.3
             enemigo_y[e] += enemigo_y_cambio[e]
         # Verificacion Colision
-        colision = hay_colision(enemigo_x[e], bala_x, enemigo_y[e], bala_y)
-        if colision:
-            sonido_colision = mixer.Sound('Golpe.mp3')
-            sonido_colision.play()
-            bala_y = 500
-            bala_visible = False
-            puntuacion += 1
-            print(f"Puntuación : {puntuacion}")
-            enemigo_x[e] = random.randint(0, 736)
-            enemigo_y[e] = random.randint(50, 200)
+        for bala in balas:
+            colision_bala_enemigo = hay_colision(enemigo_x[e], bala["x"], enemigo_y[e],  bala["y"])
+            if colision_bala_enemigo:
+                sonido_colision = mixer.Sound("Golpe.mp3")
+                sonido_colision.play()
+                balas.remove(bala)
+                puntuacion += 1
+                enemigo_x[e] = random.randint(0, 736)
+                enemigo_y[e] = random.randint(20, 200)
+                break
         enemigo(enemigo_x[e], enemigo_y[e], e)
 
     #mantener dentro de bordes jugador
@@ -173,9 +197,11 @@ while se_ejecuta:
 
 
     #movimiento de la Bala
-    if bala_y <= -64:
-        bala_y = 500
-        bala_visible = False
+    for bala in balas:
+        bala["y"] += bala["velocidad"]
+        pantalla.blit(img_bala, (bala["x"] + 16, bala["y"] + 3))
+        if bala["y"] < 0:
+            balas.remove(bala)
     if bala_visible:
         disparar_bala(bala_x, bala_y)
         bala_y -= bala_y_cambio
