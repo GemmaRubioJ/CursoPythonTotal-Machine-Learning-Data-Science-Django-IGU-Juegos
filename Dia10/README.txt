@@ -1,60 +1,18 @@
-Clase Adicional: Convierte tu Juego en un Archivo Ejecutable (.exe)
-Muchos estudiantes me han estado preguntando cómo transformar el juego Invasión Espacial (o cualquier otro programa creado con Python en general) en un programa independiente, que se pueda ejecutar por fuera del IDE.
-
-Entonces, a pedido, aquí va este pequeño manual paso a paso para hacerlo:
 
 
+**************** INVASIÓN ESPACIAL *********************
 
-Básicamente el proceso consta de 2 grandes pasos:
+             Jueguito creado por Makka
 
-Convertir las fuentes de tipo Sting a objetos Bytes
+-------------- Instrucciones de uso --------------------- 
 
-Utilizar pyinstall
-
-Entonces vamos por partes:
-
-Convertir las fuentes de tipo Sting a objetos Bytes
-
-Descarga la o las fuentes empleadas en el juego, en este caso FreeSansBold.ttf (https://www.download-free-fonts.com/details/2045/free-sans-bold). Luego guárdala en la carpeta donde se encuentra Invasión_Espacial.py como se muestra en la imagen siguiente:
+  1 . Dirígete a la carpeta 'dist'
+  2 . Ejecuta el archivo Invasion_Espacial.exe
 
 
-Crea una función que transforme el nombre de la fuente (“FreeSansBold.ttf”) de string a objeto Bytes. Para eso importamos la librería io, y pasamos como parámetro el nombre de la fuente al almacenar la función en una variable.
-
-
-Almacena la función en una variable que luego se pasará como objeto Bytes a pygame.font.Font.
-
-
-Utilizar pyinstaller
-
-Instala pyinstaller usando:
-
-pip installer pyinstaller
-
-Abre CMD en la carpeta donde se encuentra el archivo Invasión_Espacial.py
-
-
-Escribe el siguiente comando:
-
-pyinstaller --clean --onefile --windowed Invasion_Espacial.py
-
-
-
-Donde cada expresión significa lo siguiente:
-
-· --clean: elimina todos los archivos temporales y directorios creados por pyinstaller durante la construcción del archivo ejecutable.
-
-· --onefile: crea un archivo ejecutable que contiene todos los archivos necesarios para ejecutar el script, incluyendo los módulos y bibliotecas utilizadas por el script.
-
-· --windowed: crea un archivo ejecutable que se ejecuta en una ventana en lugar de en pantalla completa.
-
-· Invasión_Espacial.py: es el nombre del script Python que se va a convertir en un archivo ejecutable.
-
-Luego de unos segundos se terminará de correr el comando y la consola mostrará el siguiente mensaje:
-
-
-Se van a generar dos carpetas, una llamada built y otra llamada dist. En esta última se deberán copiar todos los archivos que son referencias para que el juego funcione:
-
-
-
-
-¡Y eso es todo! ¡Espero que te sea de gran ayuda para que puedas compartir tus programas con el mundo!
+-------------- Instrucciones de Juego --------------------- 
+ 
+  1 . Mueve tu nave con las flechas de direccion  '<-' '->'
+  2 . Dispara las balas con la barra espaciadora
+  3 . Una vez una nave enemiga llegue al nivel de tu nave 
+      La partida terminará y deberás volver a ejecutar el juego
